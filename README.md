@@ -1,4 +1,4 @@
-GNL: Smart Contract Wallet with Recovery Key on ALEO
+# GNL: Smart Contract Wallet with Recovery Key on ALEO
 
 A groundbreaking ALEO-based smart contract wallet featuring a secure recovery key system. Keep your assets safe and easily recoverable, blending user-friendly access.
 
