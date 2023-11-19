@@ -9,6 +9,7 @@ function App() {
   const [withdrawKey, setWithdrawKey] = useState(0);
   const [amount, setAmount] = useState(0);
   const [account, setAccount] = useState(null);
+  const [wallet, setWallet] = useState(null);
   const [walexecuting, setWalExecuting] = useState(false);
   const [depexecuting, setDepExecuting] = useState(false);
   const [witexecuting, setWitExecuting] = useState(false);
@@ -19,20 +20,6 @@ function App() {
     const key = await aleoWorker.getPrivateKey();
     setAccount(await key.to_string());
   };
-
-  function parseCustomJson(jsonString) {
-    // Replace the .private and .public suffixes and format as standard JSON
-    let formattedString = jsonString
-        .replace(/\.private/g, '"')
-        .replace(/\.public/g, '"')
-        .replace(/(\w+):/g, '"$1":');
-
-    // Parse and return the JavaScript object
-    return JSON.parse(formattedString);
-  }
-
-// Parsing the first element of the array
-
 
   async function createWallet() {
     setWalExecuting(true);
@@ -48,13 +35,15 @@ function App() {
     );
     setWalExecuting(false);
 
-    let parsedObject = parseCustomJson(claim_result[0]);
+    const regex = /token_id: (\d+)u64\.private/;
+    const match = claim_result[0].match(regex);
+    let tokenId;
 
-    const owner = parsedObject.owner;
-    const amount = parsedObject.amount;
-
-    console.log("Claimed to owner: ", owner);
-    console.log("Claimed amount: ", amount);
+    if (match) {
+      tokenId = match[1];
+    } else {
+      console.log('Token ID not found');
+    }
 
     setWalExecuting(true);
     
@@ -62,26 +51,47 @@ function App() {
       wallet_program,
       "create_wallet",
       [
-        owner,
-        amount,
+        "aleo13ssze66adjjkt795z9u5wpq8h6kn0y2657726h4h3e3wfnez4vqsm3008q",
+        tokenId+"u64",
         recKey+"field"
       ],
     );
 
     setWalExecuting(false);
-    parsedObject = parseCustomJson(create_result[0]);
-    
-    console.log("Created wallet with owner: ", parsedObject.owner);
-    console.log("Created wallet for token: ", parsedObject.token);
-    console.log("Created wallet with recovery key: ", parsedObject.recovery_key);
+    console.log("Created wallet: ", create_result[0]);
+
+    setWallet(create_result[0]);
   }
 
   async function deposit() {
+    setDepExecuting(true);
+    const deposit_result = await aleoWorker.localProgramExecution(
+      wallet_program,
+      "deposit",
+      [
+        wallet,
+        amount+"u64",
+      ],
+    );
 
+    setDepExecuting(false);
+    console.log("Deposited: ", deposit_result[0]);
   }
 
   async function withdraw() {
-      console.log("withdraw key: ", withdrawKey)
+    setWitExecuting(true);
+    const withdraw_result = await aleoWorker.localProgramExecution(
+      wallet_program,
+      "withdraw",
+      [
+        wallet,
+        amount+"u64",
+        withdrawKey+"field",
+      ],
+    );
+
+    setWitExecuting(false);
+    console.log("Withdrawn: ", withdraw_result[0]);
   }
 
   return (
