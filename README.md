@@ -2,6 +2,8 @@
 
 A groundbreaking ALEO-based smart contract wallet featuring a secure recovery key system. Keep your assets safe and easily recoverable, blending user-friendly access.
 
+My project aims to add value to the ecosystem by providing a simple and user-friendly solution for managing digital assets on the Aleo Blockchain. While the project is still in its early stages and not fully functional, it has the potential to attract users who are looking for a hassle-free way to create, deposit, and withdraw funds through smart contracts.
+
 ## Description
 GNL is a smart contract wallet built on the Aleo Blockchain, offering a secure and user-friendly solution for managing digital assets. With GNL, users can create wallets for their tokens, deposit and withdraw funds through smart contracts provided by the recovery key system. 
 
